@@ -1,1 +1,196 @@
 package fyers
+
+import (
+	"errors"
+	"fmt"
+
+	"resty.dev/v3"
+)
+
+type Options struct {
+	request *resty.Request
+}
+
+func NewFyers(client *resty.Client) *Options {
+	return &Options{
+		request: client.R(),
+	}
+}
+
+func (o *Options) LoginLink(appID, redirectURI string) (string, error) {
+	if appID == "" || redirectURI == "" {
+		return "", errors.New("appID, appSecret, and redirectURI must not be empty")
+	}
+	loginLink := fmt.Sprintf("%v/generate-authcode?client_id=%v&redirect_uri=%s&response_type=code&state=fyers", APIURL, appID, redirectURI)
+	return loginLink, nil
+}
+func (o *Options) ValidateAuthCode(appID, appSecret, code string) (*AuthResponse, error) {
+	authReq := &AuthRequest{
+		GrantType: "authorization_code",
+		Code:      code,
+	}
+	authReq = authReq.WithAppIDHash(appID, appSecret)
+	res := &AuthResponse{}
+	resp, err := o.request.
+		SetResult(res).
+		SetHeader("Content-Type", ApplicationJson).
+		SetForceResponseContentType(ApplicationJson).
+		SetBody(authReq).
+		Post(validateAuthCodeURL)
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, errors.New("failed to authenticate: " + resp.String())
+	}
+	return res, nil
+}
+func (o *Options) RefreshToken(appID, appSecret, refreshToken, pin string) (*RefreshTokenResponse, error) {
+	refreshReq := &RefreshTokenRequest{
+		GrantType:    "refresh_token",
+		RefreshToken: refreshToken,
+		Pin:          pin,
+	}
+	refreshReq.AppIDHash = Sha256Hash(appID + appSecret)
+	res := &RefreshTokenResponse{}
+	resp, err := o.request.
+		SetResult(res).
+		SetHeader("Content-Type", ApplicationJson).
+		SetForceResponseContentType(ApplicationJson).
+		SetBody(refreshReq).
+		Post(validateRefreshTokenURL)
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, errors.New("failed to refresh token: " + resp.String())
+	}
+	return res, nil
+}
+func (o *Options) Profile(accessToken string) (*ProfileRes, error) {
+	res := &ProfileRes{}
+	resp, err := o.request.
+		SetResult(res).
+		SetForceResponseContentType(ApplicationJson).
+		SetHeader("Authorization", accessToken).
+		Get(profileURL)
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, errors.New("failed to fetch profile: " + resp.String())
+	}
+	return res, nil
+}
+
+func (o *Options) Funds(accessToken string) (*FundResponse, error) {
+	res := &FundResponse{}
+	resp, err := o.request.
+		SetResult(res).
+		SetForceResponseContentType(ApplicationJson).
+		SetHeader("Authorization", accessToken).
+		Get(fundURL)
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, errors.New("failed to fetch fund: " + resp.String())
+	}
+	return res, nil
+}
+
+func (o *Options) Holdings(accessToken string) (*HoldingResponse, error) {
+	res := &HoldingResponse{}
+	resp, err := o.request.
+		SetResult(res).
+		SetForceResponseContentType(ApplicationJson).
+		SetHeader("Authorization", accessToken).
+		Get(holdingURL)
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, errors.New("failed to fetch holdings: " + resp.String())
+	}
+	return res, nil
+}
+
+func (o *Options) Logout(accessToken string) (*CommonResponse, error) {
+	res := &CommonResponse{}
+	resp, err := o.request.
+		SetResult(res).
+		SetForceResponseContentType(ApplicationJson).
+		SetHeader("Authorization", accessToken).
+		Post(logoutURL)
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, errors.New("failed to post logout: " + resp.String())
+	}
+	return res, nil
+}
+
+func (o *Options) Orders(accessToken string) (*OrdersResponse, error) {
+	res := &OrdersResponse{}
+	resp, err := o.request.
+		SetResult(res).
+		SetForceResponseContentType(ApplicationJson).
+		SetHeader("Authorization", accessToken).
+		Get(orderURL)
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, errors.New("failed to fetch orders: " + resp.String())
+	}
+	return res, nil
+}
+
+func (o *Options) OrdersByID(accessToken, orderID string) (*OrdersResponse, error) {
+	res := &OrdersResponse{}
+	resp, err := o.request.
+		SetResult(res).
+		SetForceResponseContentType(ApplicationJson).
+		SetHeader("Authorization", accessToken).
+		Get(orderURL + "?id=" + orderID)
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, errors.New("failed to fetch order by id: " + resp.String())
+	}
+	return res, nil
+}
+
+func (o *Options) Positions(accessToken string) (*PositionsResponse, error) {
+	res := &PositionsResponse{}
+	resp, err := o.request.
+		SetResult(res).
+		SetForceResponseContentType(ApplicationJson).
+		SetHeader("Authorization", accessToken).
+		Get(positionURL)
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, errors.New("failed to fetch positions: " + resp.String())
+	}
+	return res, nil
+}
+
+func (o *Options) Trades(accessToken string) (*TradesResponse, error) {
+	res := &TradesResponse{}
+	resp, err := o.request.
+		SetResult(res).
+		SetForceResponseContentType(ApplicationJson).
+		SetHeader("Authorization", accessToken).
+		Get(tradeURL)
+	if err != nil {
+		return nil, err
+	}
+	if resp.IsError() {
+		return nil, errors.New("failed to fetch trade: " + resp.String())
+	}
+	return res, nil
+}
