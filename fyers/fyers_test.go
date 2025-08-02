@@ -17,10 +17,18 @@ func (suite *FyersSuite) SetupTest() {
 }
 
 func (suite *FyersSuite) TestGetInstruments() {
-	suite.T().Run("GetInstruments", func(t *testing.T) {
+	suite.Run("GetInstruments", func() {
 		instruments, err := suite.fyers.GetInstruments()
 		suite.NoError(err, "Expected no error when fetching instruments")
 		suite.NotEmpty(instruments, "Expected instruments to be non-empty")
+
+		instruments = instruments.GetMapInstrumentByUnderSymbol()
+		suite.NotEmpty(instruments, "Expected instruments map to be non-empty")
+		suite.Len(instruments, 1, "Expected instruments map to have one entry")
+
+		value, ok := instruments["RELIANCE"]
+		suite.True(ok, "Expected to find 'RELIANCE' in instruments map")
+		suite.Equal("RELIANCE", value.UnderSym, "Expected UnderSym to be 'RELIANCE'")
 	})
 }
 

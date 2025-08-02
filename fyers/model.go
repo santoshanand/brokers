@@ -3,6 +3,7 @@ package fyers
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 )
 
 type CommonResponse struct {
@@ -242,6 +243,32 @@ type RefreshTokenResponse struct {
 
 // Instruments - instrument response
 type Instruments map[string]Instrument
+
+func (i Instruments) GetInstrumentBySymbol(symbol string) (*Instrument, error) {
+	if instrument, ok := i[symbol]; ok {
+		return &instrument, nil
+	}
+	return nil, fmt.Errorf("instrument with symbol %s not found", symbol)
+}
+
+func (i Instruments) GetMapInstrumentByFyToken() Instruments {
+	insts := make(Instruments)
+	for _, instrument := range i {
+		insts[instrument.FyToken] = instrument
+	}
+	return insts
+}
+
+func (i Instruments) GetMapInstrumentByUnderSymbol() Instruments {
+	insts := make(Instruments)
+	for _, instrument := range i {
+		if instrument.MinLotSize != 1 {
+			continue // Skip instruments with min lot size not equal to 1
+		}
+		insts[instrument.UnderSym] = instrument
+	}
+	return insts
+}
 
 // Instrument -
 type Instrument struct {
