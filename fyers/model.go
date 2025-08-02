@@ -239,3 +239,40 @@ type RefreshTokenResponse struct {
 	CommonResponse
 	AccessToken string `json:"access_token"`
 }
+
+// Instruments - instrument response
+type Instruments map[string]Instrument
+
+// Instrument -
+type Instrument struct {
+	LastUpdate     string  `json:"lastUpdate"`
+	ExSymbol       string  `json:"exSymbol"`
+	QtyMultiplier  float64 `json:"qtyMultiplier"`
+	PreviousClose  float64 `json:"previousClose"`
+	Exchange       float64 `json:"exchange"`
+	MtfMargin      float64 `json:"mtf_margin"`
+	IsMtfTradable  float64 `json:"is_mtf_tradable"`
+	ExSymName      string  `json:"exSymName"`
+	SymTicker      string  `json:"symTicker"`
+	ExInstType     float64 `json:"exInstType"`
+	FyToken        string  `json:"fyToken"`
+	UpperPrice     float64 `json:"upperPrice"`
+	LowerPrice     float64 `json:"lowerPrice"`
+	Segment        float64 `json:"segment"`
+	SymbolDesc     string  `json:"symbolDesc"`
+	SymDetails     string  `json:"symDetails"`
+	ExToken        float64 `json:"exToken"`
+	StrikePrice    float64 `json:"strikePrice"`
+	MinLotSize     float64 `json:"minLotSize"`
+	UnderFyTok     string  `json:"underFyTok"`
+	CurrencyCode   string  `json:"currencyCode"`
+	UnderSym       string  `json:"underSym"`
+	ExpiryDate     string  `json:"expiryDate"`
+	TradingSession string  `json:"tradingSession"`
+	ASMGSMVal      string  `json:"asmGsmVal"`
+	TickSize       float64 `json:"tickSize"`
+	ExchangeName   string  `json:"exchangeName"`
+	Isin           string  `json:"isin"`
+	TradeStatus    float64 `json:"tradeStatus"`
+	QtyFreeze      string  `json:"qtyFreeze"`
+}

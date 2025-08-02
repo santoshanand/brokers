@@ -15,4 +15,9 @@ const (
 	orderURL                = APIURL + "/orders"
 	positionURL             = APIURL + "/positions"
 	tradeURL                = APIURL + "/trades"
+	generateAuthCodeURL     = APIURL + "/generate-authcode"
+)
+
+var (
+	instrumentList = []string{"NSE_FO", "NSE_CM", "BSE_FO"}
 )

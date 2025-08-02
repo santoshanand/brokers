@@ -1,8 +1,11 @@
 package fyers
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"maps"
+	"sync"
 
 	"resty.dev/v3"
 )
@@ -17,13 +20,6 @@ func NewFyers(client *resty.Client) *Options {
 	}
 }
 
-func (o *Options) LoginLink(appID, redirectURI string) (string, error) {
-	if appID == "" || redirectURI == "" {
-		return "", errors.New("appID, appSecret, and redirectURI must not be empty")
-	}
-	loginLink := fmt.Sprintf("%v/generate-authcode?client_id=%v&redirect_uri=%s&response_type=code&state=fyers", APIURL, appID, redirectURI)
-	return loginLink, nil
-}
 func (o *Options) ValidateAuthCode(appID, appSecret, code string) (*AuthResponse, error) {
 	authReq := &AuthRequest{
 		GrantType: "authorization_code",
@@ -193,4 +189,40 @@ func (o *Options) Trades(accessToken string) (*TradesResponse, error) {
 		return nil, errors.New("failed to fetch trade: " + resp.String())
 	}
 	return res, nil
+}
+
+// GetInstruments implements IFyers.
+func (o *Options) GetInstruments() (Instruments, error) {
+	res := Instruments{}
+	errs := make([]error, 0)
+	var wg sync.WaitGroup
+	var mutex sync.Mutex
+	for _, instrument := range instrumentList {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			url := fmt.Sprintf("https://public.fyers.in/sym_details/%v_sym_master.json", instrument)
+			tmpRes := Instruments{}
+			rs, err := o.request.Get(url)
+			if err != nil {
+				errs = append(errs, fmt.Errorf("error loading symbol %s: %w", instrument, err))
+			}
+			if err := json.Unmarshal(rs.Bytes(), &tmpRes); err != nil {
+				errs = append(errs, fmt.Errorf("error unmarshalling response for %s: %w", instrument, err))
+			}
+			mutex.Lock()
+			maps.Copy(res, tmpRes)
+			mutex.Unlock()
+		}()
+	}
+	wg.Wait()
+	return res, nil
+}
+
+func (o *Options) LoginLink(apiKey, redirectURI string) (string, error) {
+	if apiKey == "" || redirectURI == "" {
+		return "", errors.New("apiKey and redirectURI must not be empty")
+	}
+	loginLink := fmt.Sprintf("%v?client_id=%v&redirect_uri=%s&response_type=code&state=fyers", generateAuthCodeURL, apiKey, redirectURI)
+	return loginLink, nil
 }

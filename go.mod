@@ -15,7 +15,9 @@ require (
 )
 
 require (
+	github.com/gorilla/websocket v1.5.3
 	github.com/samber/lo v1.51.0
 	github.com/stretchr/testify v1.10.0
 	golang.org/x/net v0.33.0 // indirect
+	google.golang.org/protobuf v1.36.6
 )
