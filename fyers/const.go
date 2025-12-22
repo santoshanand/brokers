@@ -5,17 +5,17 @@ const (
 )
 
 const (
-	APIURL                  = "https://api-t1.fyers.in/api/v3"
-	profileURL              = APIURL + "/profile"
-	validateAuthCodeURL     = APIURL + "/validate-authcode"
-	validateRefreshTokenURL = APIURL + "/validate-refresh-token"
-	holdingURL              = APIURL + "/holdings"
-	logoutURL               = APIURL + "/logout"
-	fundURL                 = APIURL + "/funds"
-	orderURL                = APIURL + "/orders"
-	positionURL             = APIURL + "/positions"
-	tradeURL                = APIURL + "/trades"
-	generateAuthCodeURL     = APIURL + "/generate-authcode"
+	APIURL                  = "https://api-t1.fyers.in"
+	profileURL              = APIURL + "/api/v3/profile"
+	validateAuthCodeURL     = APIURL + "/api/v3/validate-authcode"
+	validateRefreshTokenURL = APIURL + "/api/v3/validate-refresh-token"
+	holdingURL              = APIURL + "/api/v3/holdings"
+	logoutURL               = APIURL + "/api/v3/logout"
+	fundURL                 = APIURL + "/api/v3/funds"
+	orderURL                = APIURL + "/api/v3/orders"
+	positionURL             = APIURL + "/api/v3/positions"
+	tradeURL                = APIURL + "/api/v3/trades"
+	generateAuthCodeURL     = APIURL + "/api/v3/generate-authcode"
 )
 
 var (
