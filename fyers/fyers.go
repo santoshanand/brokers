@@ -14,9 +14,9 @@ type Options struct {
 	request *resty.Request
 }
 
-func NewFyers(client *resty.Client) *Options {
+func NewFyers() *Options {
 	return &Options{
-		request: client.R(),
+		request: resty.New().R(),
 	}
 }
 
