@@ -10,17 +10,17 @@ import (
 	"resty.dev/v3"
 )
 
-type Options struct {
+type FyersClient struct {
 	request *resty.Request
 }
 
-func NewFyers() *Options {
-	return &Options{
+func NewFyers() *FyersClient {
+	return &FyersClient{
 		request: resty.New().R(),
 	}
 }
 
-func (o *Options) ValidateAuthCode(appID, appSecret, code string) (*AuthResponse, error) {
+func (o *FyersClient) ValidateAuthCode(appID, appSecret, code string) (*AuthResponse, error) {
 	authReq := &AuthRequest{
 		GrantType: "authorization_code",
 		Code:      code,
@@ -41,7 +41,7 @@ func (o *Options) ValidateAuthCode(appID, appSecret, code string) (*AuthResponse
 	}
 	return res, nil
 }
-func (o *Options) RefreshToken(appID, appSecret, refreshToken, pin string) (*RefreshTokenResponse, error) {
+func (o *FyersClient) RefreshToken(appID, appSecret, refreshToken, pin string) (*RefreshTokenResponse, error) {
 	refreshReq := &RefreshTokenRequest{
 		GrantType:    "refresh_token",
 		RefreshToken: refreshToken,
@@ -63,7 +63,7 @@ func (o *Options) RefreshToken(appID, appSecret, refreshToken, pin string) (*Ref
 	}
 	return res, nil
 }
-func (o *Options) Profile(accessToken string) (*ProfileRes, error) {
+func (o *FyersClient) Profile(accessToken string) (*ProfileRes, error) {
 	res := &ProfileRes{}
 	resp, err := o.request.
 		SetResult(res).
@@ -79,7 +79,7 @@ func (o *Options) Profile(accessToken string) (*ProfileRes, error) {
 	return res, nil
 }
 
-func (o *Options) Funds(accessToken string) (*FundResponse, error) {
+func (o *FyersClient) Funds(accessToken string) (*FundResponse, error) {
 	res := &FundResponse{}
 	resp, err := o.request.
 		SetResult(res).
@@ -95,7 +95,7 @@ func (o *Options) Funds(accessToken string) (*FundResponse, error) {
 	return res, nil
 }
 
-func (o *Options) Holdings(accessToken string) (*HoldingResponse, error) {
+func (o *FyersClient) Holdings(accessToken string) (*HoldingResponse, error) {
 	res := &HoldingResponse{}
 	resp, err := o.request.
 		SetResult(res).
@@ -111,7 +111,7 @@ func (o *Options) Holdings(accessToken string) (*HoldingResponse, error) {
 	return res, nil
 }
 
-func (o *Options) Logout(accessToken string) (*CommonResponse, error) {
+func (o *FyersClient) Logout(accessToken string) (*CommonResponse, error) {
 	res := &CommonResponse{}
 	resp, err := o.request.
 		SetResult(res).
@@ -127,7 +127,7 @@ func (o *Options) Logout(accessToken string) (*CommonResponse, error) {
 	return res, nil
 }
 
-func (o *Options) Orders(accessToken string) (*OrdersResponse, error) {
+func (o *FyersClient) Orders(accessToken string) (*OrdersResponse, error) {
 	res := &OrdersResponse{}
 	resp, err := o.request.
 		SetResult(res).
@@ -143,7 +143,7 @@ func (o *Options) Orders(accessToken string) (*OrdersResponse, error) {
 	return res, nil
 }
 
-func (o *Options) OrdersByID(accessToken, orderID string) (*OrdersResponse, error) {
+func (o *FyersClient) OrdersByID(accessToken, orderID string) (*OrdersResponse, error) {
 	res := &OrdersResponse{}
 	resp, err := o.request.
 		SetResult(res).
@@ -159,7 +159,7 @@ func (o *Options) OrdersByID(accessToken, orderID string) (*OrdersResponse, erro
 	return res, nil
 }
 
-func (o *Options) Positions(accessToken string) (*PositionsResponse, error) {
+func (o *FyersClient) Positions(accessToken string) (*PositionsResponse, error) {
 	res := &PositionsResponse{}
 	resp, err := o.request.
 		SetResult(res).
@@ -175,7 +175,7 @@ func (o *Options) Positions(accessToken string) (*PositionsResponse, error) {
 	return res, nil
 }
 
-func (o *Options) Trades(accessToken string) (*TradesResponse, error) {
+func (o *FyersClient) Trades(accessToken string) (*TradesResponse, error) {
 	res := &TradesResponse{}
 	resp, err := o.request.
 		SetResult(res).
@@ -192,7 +192,7 @@ func (o *Options) Trades(accessToken string) (*TradesResponse, error) {
 }
 
 // GetInstruments implements IFyers.
-func (o *Options) GetInstruments() (Instruments, error) {
+func (o *FyersClient) GetInstruments() (Instruments, error) {
 	res := Instruments{}
 	errs := make([]error, 0)
 	var wg sync.WaitGroup
@@ -219,7 +219,7 @@ func (o *Options) GetInstruments() (Instruments, error) {
 	return res, nil
 }
 
-func (o *Options) LoginLink(apiKey, redirectURI string) (string, error) {
+func (o *FyersClient) LoginLink(apiKey, redirectURI string) (string, error) {
 	if apiKey == "" || redirectURI == "" {
 		return "", errors.New("apiKey and redirectURI must not be empty")
 	}
