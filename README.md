@@ -1,4 +1,4 @@
-# Trading-cli
+# Brokers
 
 A collection of small Go client wrappers for Indian broker APIs. Each folder contains a package implementing API helpers and models for a specific broker.
 
@@ -33,7 +33,7 @@ Each provider is a standalone package. Import the package you need and use the e
 
 ```go
 import (
-    "github.com/your/module/angelone"
+    "github.com/santoshanand/brokers/angelone"
 )
 
 // create and use client according to package docs
