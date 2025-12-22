@@ -8,7 +8,7 @@ import (
 
 type FyersSuite struct {
 	suite.Suite
-	fyers *Options
+	fyers *FyersClient
 }
 
 func (suite *FyersSuite) SetupTest() {
