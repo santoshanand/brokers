@@ -214,7 +214,7 @@ type AuthRequest struct {
 }
 
 func (a *AuthRequest) WithAppIDHash(appID, appSecret string) *AuthRequest {
-	a.AppIDHash = Sha256Hash(appID + appSecret)
+	a.AppIDHash = Sha256Hash(appID + ":" + appSecret)
 	return a
 
 }

@@ -198,9 +198,7 @@ func (o *FyersClient) GetInstruments() (Instruments, error) {
 	var wg sync.WaitGroup
 	var mutex sync.Mutex
 	for _, instrument := range instrumentList {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			url := fmt.Sprintf("https://public.fyers.in/sym_details/%v_sym_master.json", instrument)
 			tmpRes := Instruments{}
 			rs, err := o.request.Get(url)
@@ -213,7 +211,7 @@ func (o *FyersClient) GetInstruments() (Instruments, error) {
 			mutex.Lock()
 			maps.Copy(res, tmpRes)
 			mutex.Unlock()
-		}()
+		})
 	}
 	wg.Wait()
 	return res, nil
